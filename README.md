@@ -1,8 +1,8 @@
-gomponent
-==================================
+# gomponent
 
 This is an open.mp component for loading gamemodes written in Go with the [omp](https://github.com/kodeyeen/omp) package.
 The name `Gomponent` is composed of three word-forming elements:
+
 1. Go
 2. omp (short for open.mp)
 3. Component
@@ -18,7 +18,8 @@ Similar to goroutines (go coroutines) in Go.
 
 ```json
 "go": {
-    "gamemode": "<YOUR GAMEMODE NAME>"
+    "gamemode": "<YOUR GAMEMODE NAME>",
+    "plugin": "<plugin1> <plugin2> <plugin3>"
 }
 ```
 

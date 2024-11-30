@@ -157,18 +157,30 @@ bool Gomponent::loadGamemode() {
 }
 
 bool Gomponent::loadPlugin() {
-	StringView pluginName = config->getString("go.plugin");
-	if (pluginName.empty()) {
+	StringView pluginNames = config->getString("go.plugin");
+	if (pluginNames.empty()) {
 		core->logLn(LogLevel::Error, "go.plugin config string is not set");
 		return false;
 	}
 	try {
-		plugin_->load(pluginName.to_string());
-		plugin_->call<void>("onGameModeInit");
+		plugin_->load(pluginNames.to_string());
+		
+		// Call onGameModeInit for each plugin
+		std::istringstream iss(pluginNames.to_string());
+		std::string name;
+		while (iss >> name) {
+			try {
+				plugin_->call<void>("onGameModeInit");
+			}
+			catch (const std::runtime_error& error) {
+				core->logLn(LogLevel::Error, "Failed to initialize plugin %s: %s", name.c_str(), error.what());
+				// Continue with next plugin instead of complete failure
+			}
+		}
 		return true;
 	}
 	catch (const std::runtime_error& error) {
-		core->logLn(LogLevel::Error, "Failed to load plugin: %s", error.what());
+		core->logLn(LogLevel::Error, "Failed to load plugins: %s", error.what());
 		return false;
 	}
 }

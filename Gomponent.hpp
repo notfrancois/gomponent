@@ -30,6 +30,9 @@
 #include "interface.hpp"
 #include "Gamemode.hpp"
 
+// Streams
+#include <sstream>
+
 // `final` so we don't need virtual destructors.  Also because we know it isn't inherited.
 class Gomponent final
 	// This class is an implementation of the publicly shared `IWeatherComponent` interface.
