@@ -15,6 +15,7 @@ add_library(${PROJECT_NAME} SHARED
 	main.cpp
 	Gomponent.cpp
 	Gamemode.cpp
+	Plugin.cpp
 	
 	"api/api.hpp"
 	"api/Actor.cpp"

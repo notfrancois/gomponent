@@ -29,6 +29,7 @@
 #include "Singleton.hpp"
 #include "interface.hpp"
 #include "Gamemode.hpp"
+#include "Plugin.hpp"
 
 // Streams
 #include <sstream>
