@@ -223,6 +223,6 @@ Gomponent::~Gomponent()
 	gamemode_->unload();
 
 	// unload plugin
-	plugin_->call<void>("OnGameModeExit");
+	plugin_->call<void>("onGameModeExit");
 	plugin_->unload();
 }
