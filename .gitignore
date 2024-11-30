@@ -293,5 +293,3 @@ __pycache__/
 .vscode/
 
 docker/
-sdk/
-network/

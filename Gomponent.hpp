@@ -38,6 +38,9 @@ class Gomponent final
 {
 private:
 	Gamemode* gamemode_ = nullptr;
+	Plugin* plugin_ = nullptr;
+	bool loadGamemode();
+	bool loadPlugin();
 public:
 	ICore* core = nullptr;
 	IConfig* config = nullptr;

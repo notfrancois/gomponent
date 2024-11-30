@@ -9,6 +9,7 @@
 // Include the component's definition.
 #include "Gomponent.hpp"
 #include "Gamemode.hpp"
+#include "Plugin.hpp"
 #include "ActorEvents.hpp"
 #include "CheckpointEvents.hpp"
 #include "ClassEvents.hpp"
@@ -31,7 +32,7 @@ StringView Gomponent::componentName() const
 
 SemanticVersion Gomponent::componentVersion() const
 {
-	return SemanticVersion(0, 2, 0, 0);
+	return SemanticVersion(1, 0, 0, 0);
 }
 
 void Gomponent::onLoad(ICore* c)
@@ -43,6 +44,7 @@ void Gomponent::onLoad(ICore* c)
 	players = &c->getPlayers();
 
 	gamemode_ = Gamemode::Get();
+	plugin_ = Plugin::Get();
 }
 
 void Gomponent::onInit(IComponentList* components)
@@ -136,24 +138,48 @@ void Gomponent::onInit(IComponentList* components)
 	}
 }
 
-void Gomponent::onReady()
-{
+bool Gomponent::loadGamemode() {
 	StringView gamemodeName = config->getString("go.gamemode");
-
-	if (gamemodeName.empty())
-	{
+	if (gamemodeName.empty()) {
 		core->logLn(LogLevel::Error, "go.gamemode config string is not set");
-		return;
+		return false;
 	}
 
-	try
-	{
+	try {
 		gamemode_->load(gamemodeName.to_string());
 		gamemode_->call<void>("onGameModeInit");
+		return true;
 	}
-	catch (const std::runtime_error& error)
-	{
+	catch (const std::runtime_error& error) {
 		core->logLn(LogLevel::Error, "Failed to load gamemode: %s", error.what());
+		return false;
+	}
+}
+
+bool Gomponent::loadPlugin() {
+	StringView pluginName = config->getString("go.plugin");
+	if (pluginName.empty()) {
+		core->logLn(LogLevel::Error, "go.plugin config string is not set");
+		return false;
+	}
+	try {
+		plugin_->load(pluginName.to_string());
+		plugin_->call<void>("onGameModeInit");
+		return true;
+	}
+	catch (const std::runtime_error& error) {
+		core->logLn(LogLevel::Error, "Failed to load plugin: %s", error.what());
+		return false;
+	}
+}
+
+void Gomponent::onReady() {
+	if (!loadGamemode()) {
+		return;
+	}
+	
+	if (!loadPlugin()) {
+		return;
 	}
 }
 
@@ -192,6 +218,11 @@ void Gomponent::reset()
 // When this component is destroyed we need to tell any linked components this it is gone.
 Gomponent::~Gomponent()
 {
+	// unload gamemode
 	gamemode_->call<void>("onGameModeExit");
 	gamemode_->unload();
+
+	// unload plugin
+	plugin_->call<void>("OnGameModeExit");
+	plugin_->unload();
 }
